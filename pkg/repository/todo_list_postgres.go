@@ -1,5 +1,14 @@
 package repository
 
+import (
+	"fmt"
+	"strings"
+
+	"github.com/jmoiron/sqlx"
+	"github.com/nevskyw/todo-app"
+	"github.com/sirupsen/logrus"
+)
+
 // TodoListPostgres...
 type TodoListPostgres struct {
 	db *sqlx.DB
@@ -28,7 +37,7 @@ func (r *TodoListPostgres) Create(userId int, list todo.TodoList) (int, error) {
 	}
 
 	createUsersListQuery := fmt.Sprintf("INSERT INTO %s (user_id, list_id) VALUES ($1, $2)", usersListsTable) // Делаем вставку в таблицу UsersList, в которой свяжем id пользователя и id нового списка
-	_, err = tx.Exec(createUsersListQuery, userId, id) // Exec - метод для простого выполнения запроса, без чтения возвращаемой информации
+	_, err = tx.Exec(createUsersListQuery, userId, id)                                                        // Exec - метод для простого выполнения запроса, без чтения возвращаемой информации
 	if err != nil {
 		tx.Rollback() // Rollback - метод который откатывает все изменения БД до начала выполнения транзакции
 		return 0, err // Commit - метод который применит наши изменения к БД и закончит транзакцию
@@ -74,7 +83,7 @@ func (r *TodoListPostgres) Update(userId, listId int, input todo.UpdateListInput
 	// setValues... - слайс строк
 	// args... - слайс интерфейсов
 	// argId... - id аргументов
-	setValues := make([]string, 0) 
+	setValues := make([]string, 0)
 	args := make([]interface{}, 0)
 	argId := 1
 
@@ -99,9 +108,9 @@ func (r *TodoListPostgres) Update(userId, listId int, input todo.UpdateListInput
 	query := fmt.Sprintf("UPDATE %s tl SET %s FROM %s ul WHERE tl.id = ul.list_id AND ul.list_id=$%d AND ul.user_id=$%d", // Запись запроса
 		todoListsTable, setQuery, usersListsTable, argId, argId+1)
 	args = append(args, listId, userId)
-	
+
 	//логируем запрос
-	logrus.Debugf("updateQuery: %s", query) 
+	logrus.Debugf("updateQuery: %s", query)
 	logrus.Debugf("args: %s", args)
 
 	_, err := r.db.Exec(query, args...)

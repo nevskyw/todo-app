@@ -1,6 +1,14 @@
 // Новый файл для работы со списками
 package repository
 
+import (
+	"fmt"
+	"strings"
+
+	"github.com/jmoiron/sqlx"
+	"github.com/nevskyw/todo-app"
+)
+
 // TodoItemPostgres...
 type TodoItemPostgres struct {
 	db *sqlx.DB
@@ -21,7 +29,7 @@ func (r *TodoItemPostgres) Create(listId int, item todo.TodoItem) (int, error) {
 	}
 
 	var itemId int
-	createItemQuery := fmt.Sprintf("INSERT INTO %s (title, description) values ($1, $2) RETURNING id", todoItemsTable) 
+	createItemQuery := fmt.Sprintf("INSERT INTO %s (title, description) values ($1, $2) RETURNING id", todoItemsTable)
 
 	row := tx.QueryRow(createItemQuery, item.Title, item.Description)
 	err = row.Scan(&itemId)
@@ -30,7 +38,7 @@ func (r *TodoItemPostgres) Create(listId int, item todo.TodoItem) (int, error) {
 		return 0, err
 	}
 
-	createListItemsQuery := fmt.Sprintf("INSERT INTO %s (list_id, item_id) values ($1, $2)", listsItemsTable) 
+	createListItemsQuery := fmt.Sprintf("INSERT INTO %s (list_id, item_id) values ($1, $2)", listsItemsTable)
 	_, err = tx.Exec(createListItemsQuery, listId, itemId) // Exec - метод для простого выполнения запроса, без чтения возвращаемой информации
 	if err != nil {
 		tx.Rollback() // Rollback - метод который откатывает все изменения БД до начала выполнения транзакции
@@ -70,7 +78,7 @@ func (r *TodoItemPostgres) GetById(userId, itemId int) (todo.TodoItem, error) {
 func (r *TodoItemPostgres) Delete(userId, itemId int) error {
 	query := fmt.Sprintf(`DELETE FROM %s ti USING %s li, %s ul 
 									WHERE ti.id = li.item_id AND li.list_id = ul.list_id AND ul.user_id = $1 AND ti.id = $2`,
-									todoItemsTable, listsItemsTable, usersListsTable)
+		todoItemsTable, listsItemsTable, usersListsTable)
 	_, err := r.db.Exec(query, userId, itemId)
 	return err
 }

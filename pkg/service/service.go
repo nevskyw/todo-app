@@ -1,4 +1,9 @@
-package service 
+package service
+
+import (
+	"github.com/nevskyw/todo-app"
+	"github.com/nevskyw/todo-app/pkg/repository"
+)
 
 // Service
 type Service struct { // сервисы будут обращаться к базе данных
@@ -6,7 +11,6 @@ type Service struct { // сервисы будут обращаться к ба�
 	TodoList
 	TodoItem
 }
-
 
 // NewService...
 func NewService(repos *repository.Repository) *Service {
@@ -17,7 +21,6 @@ func NewService(repos *repository.Repository) *Service {
 		TodoItem:      NewTodoItemService(repos.TodoItem, repos.TodoList),
 	}
 }
-
 
 type Authorization interface {
 	CreateUser(user todo.User) (int, error)

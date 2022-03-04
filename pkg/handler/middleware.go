@@ -1,6 +1,14 @@
 /*Прослойка - которая будет парсить JWT токены из запроса и предоставлять доступ к нашей группе эндпоинтов /api */
 
-package handler 
+package handler
+
+import (
+	"errors"
+	"net/http"
+	"strings"
+
+	"github.com/gin-gonic/gin"
+)
 
 const (
 	authorizationHeader = "Authorization"
@@ -13,8 +21,8 @@ func (h *Handler) userIdentity(c *gin.Context) {
 	// валидируем что он не пустой
 	// при ошибке возвращаем статус код 401
 	header := c.GetHeader(authorizationHeader)
-	if header == "" { 
-		newErrorResponse(c, http.StatusUnauthorized, "empty auth header") 
+	if header == "" {
+		newErrorResponse(c, http.StatusUnauthorized, "empty auth header")
 		return
 	}
 
@@ -33,7 +41,7 @@ func (h *Handler) userIdentity(c *gin.Context) {
 	}
 
 	// ParseToken...
-	/* если все успешно, то записываем значение id в контекст, это делается для того, чтобы иметь доступ к id пользователя, 
+	/* если все успешно, то записываем значение id в контекст, это делается для того, чтобы иметь доступ к id пользователя,
 	который делает запрос. В последующих обработчиках, которые вызываются после данной прослойки*/
 	userId, err := h.services.Authorization.ParseToken(headerParts[1])
 	if err != nil {

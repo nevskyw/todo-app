@@ -1,5 +1,9 @@
 package service
 
+import (
+	"github.com/nevskyw/todo-app"
+	"github.com/nevskyw/todo-app/pkg/repository"
+)
 // TodoListService... передаем в качестве поля нашей структуры и будем передовать в конструкторе
 type TodoListService struct {
 	repo repository.TodoList

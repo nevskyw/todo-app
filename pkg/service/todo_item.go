@@ -1,8 +1,13 @@
 package service
 
+import (
+	"github.com/nevskyw/todo-app"
+	"github.com/nevskyw/todo-app/pkg/repository"
+)
+
 // TodoItemService...
 type TodoItemService struct {
-	repo repository.TodoItem
+	repo     repository.TodoItem
 	listRepo repository.TodoList
 }
 
@@ -21,7 +26,6 @@ func (s *TodoItemService) Create(userId, listId int, item todo.TodoItem) (int, e
 
 	return s.repo.Create(listId, item)
 }
-
 
 // GetAll...
 func (s *TodoItemService) GetAll(userId, listId int) ([]todo.TodoItem, error) {

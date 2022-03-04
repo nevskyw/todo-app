@@ -1,5 +1,13 @@
 // Задачи списка - обработчик
-package handler 
+package handler
+
+import (
+	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/nevskyw/todo-app"
+)
 
 // createItem...
 // Создание...
@@ -57,7 +65,6 @@ func (h *Handler) getAllItems(c *gin.Context) {
 	c.JSON(http.StatusOK, items)
 }
 
-
 // getItemById...
 // Получение задач списка по ID...
 func (h *Handler) getItemById(c *gin.Context) {
@@ -110,7 +117,6 @@ func (h *Handler) updateItem(c *gin.Context) {
 
 	c.JSON(http.StatusOK, statusResponse{"ok"})
 }
-
 
 // deleteItem...
 // Удаление...

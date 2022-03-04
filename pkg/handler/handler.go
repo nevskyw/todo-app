@@ -1,4 +1,9 @@
-package handler 
+package handler
+
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/nevskyw/todo-app/pkg/service"
+)
 
 type Handler struct {
 	services *service.Service // внедрение зависимостей | указатель на service
@@ -9,7 +14,7 @@ func NewHandler(services *service.Service) *Handler {
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
-	// Инициализация роутера	
+	// Инициализация роутера
 	router := gin.New()
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler)) // объявляем наши методы сгрупировав их по маршрутам
@@ -24,11 +29,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		lists := api.Group("/lists") // работа со списками - /lists
 		{
-			lists.POST("/", h.createList) // создание
-			lists.GET("/", h.getAllLists) // получение всех списков
-			lists.GET("/:id", h.getListById) // получение списка по ID 
-			lists.PUT("/:id", h.updateList) // редактирование списка
-			lists.DELETE("/:id", h.deleteList) // удаление 
+			lists.POST("/", h.createList)      // создание
+			lists.GET("/", h.getAllLists)      // получение всех списков
+			lists.GET("/:id", h.getListById)   // получение списка по ID
+			lists.PUT("/:id", h.updateList)    // редактирование списка
+			lists.DELETE("/:id", h.deleteList) // удаление
 
 			items := lists.Group(":id/items") // Задачи списка  - ":id/items"
 			{

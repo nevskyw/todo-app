@@ -1,4 +1,9 @@
-package repository 
+package repository
+
+import (
+	"github.com/jmoiron/sqlx"
+	"github.com/nevskyw/todo-app"
+)
 
 // Repository...
 type Repository struct {

@@ -1,9 +1,16 @@
 // Обработчик регистрации и авторизации
-package handler 
+package handler
 
-// signUp ... 
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/nevskyw/todo-app"
+)
+
+// signUp ...
 // регистрация
-func (h *Handler) signUp(c *gin.Context) { 
+func (h *Handler) signUp(c *gin.Context) {
 	var input todo.User // - будем записывать данные из JSON для пользователей
 
 	if err := c.BindJSON(&input); err != nil { // парсим JSON
@@ -28,8 +35,7 @@ type signInInput struct {
 	Password string `json:"password" binding:"required"`
 }
 
-
-// signIn ... 
+// signIn ...
 // авторизация
 func (h *Handler) signIn(c *gin.Context) {
 	var input signInInput // для получения логина и пороля в запросе

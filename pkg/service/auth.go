@@ -1,4 +1,15 @@
-package service 
+package service
+
+import (
+	"crypto/sha1"
+	"errors"
+	"fmt"
+	"time"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/nevskyw/todo-app"
+	"github.com/nevskyw/todo-app/pkg/repository"
+)
 
 const (
 	salt       = "hjqrhjqw124617ajfhajs"
@@ -6,7 +17,7 @@ const (
 	tokenTTL   = 12 * time.Hour
 )
 
-type tokenClaims struct { 
+type tokenClaims struct {
 	jwt.StandartClaims
 	UserId int `json:"user_id"`
 }
@@ -20,13 +31,12 @@ func NewAuthService(repo repository.Authorization) *AuthService {
 	return &AuthService{repo: repo}
 }
 
-// CreateUser... 
+// CreateUser...
 func (s *AuthService) CreateUser(user todo.User) (int, error) {
 	// перед записью пользователей в БД мы будем хешировать пароль
 	user.Password = generatePasswordHash(user.Password)
 	return repo.CreateUser(user)
 }
-
 
 // generatePasswordHash...
 // функция хеширования пороля!
@@ -64,7 +74,7 @@ func (s *AuthService) ParseToken(accessToken string) (int, error) {
 	// ParseWithClaims... - функция, принимающая JWT токен
 	// token.Method... - функция, которая возвращает ключ-подпись или ошибку
 	token, err := jwt.ParseWithClaims(accessToken, &tokenClaims{}, func(token *jwt.Token) (interface{}, error) {
-		
+
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("invalid signing method")
 		}
@@ -82,4 +92,3 @@ func (s *AuthService) ParseToken(accessToken string) (int, error) {
 
 	return claims.UserId, nil
 }
-

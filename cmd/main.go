@@ -1,17 +1,31 @@
 package main
 
+import (
+	"context"
+	"os"
+	"os/signal"
+	"syscall"
+
+	_ "github.com/lib/pq"
+	"github.com/nevskyw/todo-app"
+	"github.com/nevskyw/todo-app/pkg/handler"
+	"github.com/nevskyw/todo-app/pkg/repository"
+	"github.com/nevskyw/todo-app/pkg/service"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
+)
 
 // initConfig - инициализируем конфигурационные файлы
 func initConfig() error {
 	viper.AddConfigPath("configs") // - указываем имя нашей дериктории
-	viper.SetConfigName("config") // - указываем имя нашего файла
+	viper.SetConfigName("config")  // - указываем имя нашего файла
 	return viper.ReadInConfig()
 }
 
 func main() {
 	// формат JSON для наших логов
 	logrus.SetFormatter(new(logrus.JSONFormatter))
-	
+
 	// initConfig - выполнение функции
 	if err := initConfig(); err != nil {
 		logrus.Fatalf("error initializing configs: %s", err.Error())
@@ -35,12 +49,12 @@ func main() {
 		logrus.Fatalf("failed to initialize db: %s", err.Error())
 	}
 
-	repos := repository.NewRepository(db) 
+	repos := repository.NewRepository(db)
 	services := service.NewService(repos)
 	handlers := handler.NewHandler(services)
 
 	// Инициализируем сервер в горутине
-	srv := new(todo.Server) 
+	srv := new(todo.Server)
 	go func() {
 		if err := srv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil { // handlers.InitRoutes() - возрвщвет указатель типа gin.Engine
 			logrus.Fatalf("error occured while running http server: %s", err.Error())

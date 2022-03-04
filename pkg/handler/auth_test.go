@@ -1,4 +1,18 @@
-package handler 
+package handler
+
+import (
+	"bytes"
+	"errors"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/gin-gonic/gin"
+	"github.com/golang/mock/gomock"
+	"github.com/magiconair/properties/assert"
+	"github.com/nevskyw/todo-app"
+	"github.com/nevskyw/todo-app/pkg/service"
+	service_mocks "github.com/nevskyw/todo-app/pkg/service/mocks"
+)
 
 func TestHandler_signUp(t *testing.T) {
 	// Init Test Table
@@ -27,10 +41,10 @@ func TestHandler_signUp(t *testing.T) {
 			expectedResponseBody: `{"id":1}`,
 		},
 		{
-			name:      "Wrong Input",
-			inputBody: `{"username": "username"}`,
-			inputUser: todo.User{},
-			mockBehavior: func(r *service_mocks.MockAuthorization, user todo.User) {},
+			name:                 "Wrong Input",
+			inputBody:            `{"username": "username"}`,
+			inputUser:            todo.User{},
+			mockBehavior:         func(r *service_mocks.MockAuthorization, user todo.User) {},
 			expectedStatusCode:   400,
 			expectedResponseBody: `{"message":"invalid input body"}`,
 		},
@@ -68,7 +82,7 @@ func TestHandler_signUp(t *testing.T) {
 
 			// Create Request
 			w := httptest.NewRecorder()
-			req:= httptest.NewRequest("POST", "/sign-up",
+			req := httptest.NewRequest("POST", "/sign-up",
 				bytes.NewBufferString(test.inputBody))
 
 			// Make Request
